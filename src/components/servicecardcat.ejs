@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="../styles/components/servicecard.css">
+
+<div class="service-card">
+  <div style="cursor: pointer;" class="gigCard" >
+    <a style="text-decoration: none;
+    color: inherit;" href="/services/detail/<%= service.id %>">
+
+    <img src="/<%= service.cover %>" alt="<%= service.title %>" />
+
+    <div class="info">
+      <% if (service.userLoading) { %>
+        <span>Cargando...</span>
+      <% } else if (service.userError) { %>
+        <span>Algo salió mal</span>
+      <% } else { %>
+        <div class="user">
+          <img
+            src="<%= service.userImg || '../image/noavatar.jpg' %>"
+            alt="<%= service.username || 'Usuario desconocido' %>"
+          />
+          <span><%= service.userName %></span>
+        </div>
+      <% } %>
+      <p><%= service.shortDesc %></p>
+      <div class="star">
+        <img src="../image/star.png" alt="Rating" />
+        <span>
+          <%= !isNaN(service.totalStars / service.starNumber)
+            ? Math.round(service.totalStars / service.starNumber)
+            : 0 %>
+        </span>
+      </div>
+    </div>
+    <hr />
+    <div class="detail">
+      <img src="../image/heart.png" alt="Favorito" />
+      <div class="price">
+        <span>DESDE</span>
+        <h2>$ <%= service.price %></h2>
+      </div>
+    </div>
+
+</a>
+  </div>
+</div>

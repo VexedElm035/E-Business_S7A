@@ -1,0 +1,15 @@
+<%- include('./../components/navbar.ejs') %>
+
+<div id="app" class="service-detail">
+  <div class="container">
+    <h1><%= service.title %></h1>
+    <img src="<%= service.cover %>" class="img-fluid" alt="<%= service.title %>">
+    <p><%= service.description %></p>
+    <p>Precio: $<%= service.price %></p>
+    <p>Tiempo de entrega: <%= service.deliveryTime %> días</p>
+    <p>Revisiones: <%= service.revisionNumber %></p>
+    <p>Funciones: <%= service.features %></p>
+  </div>
+</div>
+
+<%- include('./../components/footer.ejs') %>

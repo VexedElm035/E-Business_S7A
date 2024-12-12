@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="../styles/bootstrap.min.css">
+<link rel="stylesheet" href="../styles/pages/orders.css">
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .link {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+
+<%- include('./../components/navbarAdmin.ejs') %>
+
+<div class="categories">
+  <h1>Pedidos</h1>
+  <hr style="background-color: rgb(187, 187, 187); height: 3px; width: 90%; margin-bottom: 30px;">
+
+  <div style="width: 100%;" class="container">
+    <table style="width: 70%;" class="table">
+      <thead>
+        <tr class="table-primary">
+          <td>ID</td>
+          <td>ID de servicio</td>
+          <td>ID de vendedor</td>
+          <td>ID de comprador</td>
+          <td>Fecha</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (orders) { %>
+          <% for(var i=0; i < orders.length; i++) { %>
+            <tr>
+              <td><%= orders[i].id %></td>
+              <td><%= orders[i].ServiceId %></td>
+              <td><%= orders[i].sellerId %></td>
+              <td><%= orders[i].buyerId %></td>
+              <td><%= orders[i].createdAt %></td>
+       
+            </tr>
+          <% } %>
+        <% } %>
+      </tbody>
+    </table>
+
+  </div>

@@ -1,0 +1,78 @@
+<link rel="stylesheet" href="/styles/bootstrap.min.css">
+<link rel="stylesheet" href="/styles/pages/catalogue.css">
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .link {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+
+<%- include('./../components/navbar.ejs') %>
+
+<center>
+<div class="card bg-secondary mb-3" style="max-width: 60%;">
+    <div class="card-header">
+        <h1><%= service.title %></h1>
+        <img style="width: 50%;" src="/<%= service.cover %>" class="img-fluid" alt="<%= service.title %>">
+        <div class="user">
+            <img style=" width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;"
+              src="<%= service.userImg || '/image/noavatar.jpg' %>"
+              alt="<%= service.username || 'Usuario desconocido' %>"
+            />
+            <span><%= service.userName %></span>
+          </div>
+    </div>
+    <div class="card-body">
+
+        <p class="card-text"><%= service.description %></p>
+      <h4 class="card-title">Precio: $<%= service.price %></h4>
+     <p class="card-text">Tiempo de entrega: <%= service.deliveryTime %> días</p>
+      <p class="card-text">Revisiones: <%= service.revisionNumber %></p>
+      <p class="card-text">Funciones: <%= service.features %></p>
+    </div>
+    <button class="btn btn-primary" id="buy-service">Pedir servicio</button>
+</div>
+</center>
+
+
+
+
+<script>
+  document.getElementById("buy-service").addEventListener("click", () => {
+    const serviceId = "<%= service.id %>"; // Obtener el ID del servicio desde EJS
+    const sellerId = "<%= service.userId %>";
+    fetch(`/orders/order/${serviceId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert(data.success); // Mostrar un mensaje de éxito
+          window.location.href = "/services/catalogue"; // Redirigir al catálogo
+        } else {
+          alert(data.error); // Mostrar el mensaje de error
+        }
+      })
+      .catch((err) => {
+        console.error("Error al procesar la compra:", err);
+        alert("Ocurrió un error inesperado. Inténtalo de nuevo.");
+      });
+  });
+</script>
+
+
+
+
+
+<%- include('./../components/footer.ejs') %>

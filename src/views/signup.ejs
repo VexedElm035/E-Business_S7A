@@ -1,0 +1,122 @@
+<link rel="stylesheet" href="../styles/bootstrap.min.css">
+<link rel="stylesheet" href="../styles/pages/signup.css">
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .link {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+<div class="register" style="height: 920px;">
+  <div style="display: flex; width: 45%; height: 100%">
+    <img src="/image/landscape.jpg" style="width: 100%; object-fit: fit;" alt="">
+    <div style="position: absolute; left: 20px; top: 20px;" class="blur">
+      <a class="btn btn-link" style="color: white; font-size: 20px;" href="/">Volver al menú</a>
+    </div>
+  </div>
+  <div class="card bg-secondary mb-3" style="width: 55%; height: 100%">
+    <div class="card-header">
+      <center>
+        <h1 class='logo'>Registro</h1>
+        <a href="/customers/login">
+          <p class='login-text'>¿Ya tienes una cuenta? Inicia sesión aquí</p>
+        </a>
+      </center>
+    </div>
+    <div class="card-body">
+      <center>
+        <div id="response-message" style="color: red; margin-bottom: 15px; display: none;"></div>
+        <form id="signup-form" class="form">
+          <div>
+            <label for="username" class="form-label mt-4">Nombre de Usuario:</label>
+            <input type="text" class="form-control" name="username">          
+          </div>
+          <div>
+            <label for="email" class="form-label mt-4">Correo Electrónico:</label>
+            <input type="email" class="form-control" name="email">
+            <small id="emailHelp" class="form-text text-muted">No compartiremos tu correo electrónico con nadie más.</small>
+          </div>
+          <div>
+            <label for="phone" class="form-label mt-4">Teléfono:</label>
+            <input type="tel" class="form-control" name="phone">          
+          </div>
+          <div>
+            <label for="password" class="form-label mt-4">Contraseña:</label>
+            <input type="password" name="password" class="form-control" required>
+          </div>
+          <div>
+            <label for="confirmPassword" class="form-label mt-4">Confirmar Contraseña:</label>
+            <input type="password" name="confirmPassword" class="form-control" required>
+          </div>
+          <div class="center mt-4">
+            <button type="submit" class="btn btn-outline-primary">Registrarse</button>
+          </div>
+        </form>
+      </center>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("signup-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const form = e.target;
+
+    // Construir el objeto JSON desde los inputs del formulario
+    const formData = {
+      username: form.username.value,
+      email: form.email.value,
+      phone: form.phone.value,
+      password: form.password.value,
+      confirmPassword: form.confirmPassword.value
+    };
+
+    const responseMessage = document.getElementById("response-message");
+
+    try {
+      // Enviar la solicitud con el objeto JSON
+      const response = await fetch("/customers/signup-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData) // Convertir a JSON
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        responseMessage.style.color = "green";
+        responseMessage.textContent = result.success;
+        responseMessage.style.display = "block";
+
+        // Redirigir tras un pequeño retraso
+        setTimeout(() => {
+          window.location.href = "/customers/login";
+        }, 1000);
+      } else {
+        responseMessage.style.color = "red";
+        responseMessage.textContent = result.error;
+        responseMessage.style.display = "block";
+      }
+    } catch (error) {
+      console.error("Error en el registro:", error);
+      responseMessage.style.color = "red";
+      responseMessage.textContent = "Error inesperado. Por favor, inténtalo de nuevo.";
+      responseMessage.style.display = "block";
+    }
+  });
+</script>
+
+
+
+
+
+
+
+<%- include('./../components/footer.ejs') %>
+

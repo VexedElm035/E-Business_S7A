@@ -1,0 +1,45 @@
+.slide {
+    display: flex;
+    justify-content: center;
+    padding: 50px 0;
+    z-index: 0;
+  }
+  
+  .slide .container {
+    width: 1400px;
+    position: relative;
+  }
+  
+  .slider {
+    display: flex;
+    
+  }
+  .slider::-webkit-scrollbar {
+    display: none; /* Oculta la barra de desplazamiento para un diseño más limpio */
+  }
+  
+  .carousel-prev,
+  .carousel-next {
+    width: 50px;
+    height: 50px;
+    background-color: rgb(243, 243, 243);
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  
+  .carousel-prev {
+    left: 0px;
+  }
+  
+  .carousel-next {
+    right: 0px;
+  }
+  

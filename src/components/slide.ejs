@@ -1,0 +1,47 @@
+<link rel="stylesheet" href="../styles/components/slide.css">
+
+<div class="slide">
+    <div class="container">
+      <div class="slider" id="slider">
+        <% cards.forEach((card) => { %>
+          <%- include('./../components/catcard', { card: card }) %>
+        <% }) %>
+      </div>
+     <!-- <button class="carousel-prev" id="arrow-left">&#8249;</button>-->
+       <!--<button class="carousel-next" id="arrow-right">&#8250;</button>-->
+    </div>
+  </div>
+  
+
+
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const slider = document.getElementById("slider");
+  const leftArrow = document.getElementById("arrow-left");
+  const rightArrow = document.getElementById("arrow-right");
+  
+  const cardWidth = slider.firstElementChild.offsetWidth; // Detecta dinámicamente el ancho.
+
+  const slidesToShow = 5; // Cantidad de tarjetas visibles.
+  let currentScroll = 0;
+
+  // Función para desplazar el carrusel.
+  function scrollSlider(direction) {
+    const maxScroll = slider.scrollWidth - slider.offsetWidth;
+    if (direction === "left") {
+      currentScroll = Math.max(0, currentScroll - cardWidth * slidesToShow);
+    } else {
+      currentScroll = Math.min(maxScroll, currentScroll + cardWidth * slidesToShow);
+    }
+    slider.scrollTo({ left: currentScroll, behavior: "smooth" });
+  }
+
+  // Agregar eventos a los botones.
+  leftArrow.addEventListener("click", () => scrollSlider("left"));
+  rightArrow.addEventListener("click", () => scrollSlider("right"));
+});
+
+
+
+  </script>
+  

@@ -1,0 +1,248 @@
+<link rel="stylesheet" href="../styles/bootstrap.min.css">
+<link rel="stylesheet" href="../styles/pages/users.css">
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .link {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+
+<%- include('./../components/navbarAdmin.ejs') %>
+
+<div style="display: flex; justify-content: space-around;" >
+<div id="alertContainer" style="position: fixed; top: 50px; width: 30%; z-index: 1050; display: none;">
+  <div id="alertMessage" class="alert alert-dismissible fade show" role="alert">
+    <span id="alertText"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+</div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<div class="users">
+  <h1>Usuarios</h1>
+  <hr style="background-color: rgb(187, 187, 187); height: 3px; width: 90%; margin-bottom: 30px;">
+
+  <div class="container">
+    <table class="table">
+      <thead>
+        <tr class="table-primary">
+          <td>ID.</td>
+          <td>Nombre</td>
+          <td>email</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (users) { %>
+          <% for(var i=0; i < users.length; i++) { %>
+            <tr>
+              <td><%= users[i].id %></td>
+              <td><%= users[i].username %></td>
+              <td><%= users[i].email %></td>
+              
+              <td>
+                <button class="btn btn-info" onclick="editUser('<%= users[i].id %>')">INSPECCIONAR</button>
+              </td>
+            </tr>
+          <% } %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Formulario de edición oculto -->
+  <div id="editForm" class="card bg-secondary mb-3" style=" margin-top: 20px;">
+    <div class="card-header" style="display: flex; flex-direction: row; justify-content: space-between;">
+      <h3>USUARIO: <span id="name" name="name"></span></h3>
+
+      <div style="display: flex; align-items: center;">
+      <label for="id" class="col-form-label mt-2">ID:</label>
+            <div class="col-sm-30">
+              <input type="text" id="id" name="id" class="form-control" required readonly="">
+            </div>
+        </div>
+      <button class="btn btn-outline-danger" onclick="closeEditForm()">X</button>
+    </div>
+    
+    <div class="card-body">
+      <form id="updateForm" method="POST" action="/admin/users/update">
+        <input type="hidden" id="originalName" name="originalName">
+
+        <div class="form-check form-switch mt-4">
+            <input class="form-check-input" type="checkbox" id="isDisabled" disabled="">
+            <label class="form-check-label" for="isDisabled" id="isDisabledLabel">Estado del usuario</label>
+            <input type="hidden" name="hiddenIsDisabled" id="hiddenIsDisabled">
+        </div>
+
+        <div class="form-group">
+          <label for="nombre" class="col-form-label mt-2">Nombre:</label>
+          <div class="col-sm-20">
+            <input type="text" id="nombre" name="nombre" class="form-control" required  disabled="">
+        </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email" class="col-form-label mt-2">Correo Electrónico:</label>
+            <div class="col-sm-20">
+              <input type="text" id="email" name="email" class="form-control" required  disabled="">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="col-form-label mt-2">Contraseña:</label>
+            <div class="col-sm-20">
+              <input type="password" id="password" name="password" class="form-control" required  disabled="">
+            </div>
+          </div>
+        
+
+          <div class="form-group">
+            <label for="country" class="col-form-label mt-2">País:</label>
+            <div class="col-sm-20">
+              <input type="text" id="country" name="country" class="form-control" required readonly="" disabled="">
+            </div>
+          </div>
+
+          
+          <div class="form-group">
+            <label for="phone" class="col-form-label mt-2">Teléfono:</label>
+            <div class="col-sm-20">
+              <input type="number" id="phone" name="phone" class="form-control" required readonly="" disabled="">
+            </div>
+          </div>
+      
+          <div class="form-check form-switch mt-4">
+            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+            <label class="form-check-label" for="flexSwitchCheckDefault">Habilitar Edicion</label>
+          </div>
+
+
+          <div style="display: flex; flex-direction: row; justify-content: space-between;">
+            <div style="display: flex; justify-content: flex-start;">
+              <button type="submit" class="btn btn-primary mt-4" id="guardarCambios" style="display:none;">Guardar Cambios</button>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <a id="delCat" class="btn btn-danger mt-4" style="width: 150px;">Eliminar</a>
+            </div>
+          </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    let globalState = {
+      originalName: '',
+      originalEmail: '',
+      originalPass: ''
+    };
+  
+    function updateHiddenField() {
+      const checkbox = document.getElementById('isDisabled');
+      const hiddenField = document.getElementById('hiddenIsDisabled');
+      const label = document.getElementById('isDisabledLabel');
+      const isChecked = checkbox.checked;
+      hiddenField.value = isChecked ? 0 : 1;
+      label.textContent = isChecked ? 'Habilitado' : 'Deshabilitado';
+    }
+  
+    function editUser(id) {
+      fetch(`/admin/users/update/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          globalState.originalName = data.username;
+          globalState.originalEmail = data.email;
+          globalState.originalPass = data.password;
+          document.getElementById('name').textContent = data.username;
+          document.getElementById('id').value = data.id;
+          document.getElementById('nombre').value = data.username;
+          document.getElementById('email').value = data.email;
+          document.getElementById('password').value = "*******************"; // Censurado
+          document.getElementById('country').value = data.country;
+          document.getElementById('phone').value = data.phone;
+          document.getElementById('isDisabled').checked = data.disabled == 0;
+          document.getElementById('updateForm').action = `/admin/users/update/${id}`;
+          document.getElementById('delCat').setAttribute('href', `/admin/users/delete/${id}`);
+          document.getElementById('editForm').classList.add('active');
+          document.getElementById('overlay').classList.add('active');
+          document.body.style.overflow = 'hidden';
+  
+          // Actualizar el campo oculto y la etiqueta después de cargar los datos
+          updateHiddenField();
+        })
+        .catch(error => {
+          console.error("Error al cargar datos del usuario:", error);
+          showAlert("error", "No se pudo cargar los datos del usuario.");
+        });
+    }
+  
+    function closeEditForm() {
+      document.getElementById('editForm').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  
+    document.getElementById('isDisabled').addEventListener('change', updateHiddenField);
+  
+    document.getElementById('flexSwitchCheckDefault').addEventListener('change', function(event) {
+      const isChecked = event.target.checked;
+      document.getElementById('nombre').disabled = !isChecked;
+      document.getElementById('email').disabled = !isChecked;
+      document.getElementById('password').disabled = !isChecked;
+      document.getElementById('isDisabled').disabled = !isChecked;
+      document.getElementById('guardarCambios').style.display = isChecked ? 'block' : 'none';
+      if (isChecked) {
+        document.getElementById('password').value = globalState.originalPass; 
+        document.getElementById('password').type = 'password'; 
+      } else {
+        document.getElementById('password').value = '********';
+        document.getElementById('password').type = 'password';
+        document.getElementById('nombre').value = globalState.originalName;
+        document.getElementById('email').value = globalState.originalEmail;
+      }
+    });
+  
+    window.addEventListener('click', function(event) {
+      const isClickInside = document.getElementById('editForm').contains(event.target);
+      if (!isClickInside) {
+        closeEditForm();
+      }
+    });
+  </script>
+
+<script>
+  function showAlert(status, message) {
+    const alertContainer = document.getElementById("alertContainer");
+    const alertMessage = document.getElementById("alertMessage");
+    const alertText = document.getElementById("alertText");
+    if (status === "success") {
+      alertMessage.classList.remove("alert-danger", "alert-warning");
+      alertMessage.classList.add("alert-success");
+    } else if (status === "error") {
+      alertMessage.classList.remove("alert-success", "alert-warning");
+      alertMessage.classList.add("alert-danger");
+    } else {
+      alertMessage.classList.remove("alert-success", "alert-danger");
+      alertMessage.classList.add("alert-warning");
+    }
+    alertText.textContent = message;
+    alertContainer.style.display = "block";
+    setTimeout(() => {
+      alertContainer.style.display = "none";
+    }, 5000);
+  }
+  const urlParams = new URLSearchParams(window.location.search);
+  const status = urlParams.get("status");
+  const message = urlParams.get("message");
+  if (status && message) {
+    showAlert(status, message);
+    const newUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+</script>

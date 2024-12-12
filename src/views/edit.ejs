@@ -1,0 +1,200 @@
+<link rel="stylesheet" href="../styles/bootstrap.min.css">
+
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .link {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+
+<%- include('./../components/navbar.ejs') %>
+
+<link rel="stylesheet" href="../styles/pages/add.css">
+
+
+<div id="app" class="add" style="margin-top: 40px;">
+    <div class="container">
+      <h1 style="cursor: context-menu;">Agregar nuevo servicio</h1>
+      <div>
+
+        <form class="sections" id="serviceForm" method="POST" action="/services/add-new" enctype="multipart/form-data">
+          <div class="info">
+            <label for="title" class="col-form-label mt-4">Título</label>
+            <input class="form-control" type="text" id="title" name="title" required>
+            <input
+            type="hidden"
+            id="userId"
+            name="userId"
+            value="<%= userId %>"/>
+            <label for="category" class="col-form-label mt-4">Categoria</label>
+            <select class="form-select" id="category" name="category" required>
+              <% categories.forEach(category => { %>
+                <option value="<%= category.id %>"><%= category.name %></option>
+              <% }) %>
+            </select>
+        
+            <div class="images">
+              <label class="col-form-label mt-4" for="coverImage">Foto de presentación</label>
+              <input class="form-control" type="file" id="coverImage" name="cover">
+        
+              <label class="col-form-label mt-4" for="uploadImages">Imágenes adicionales</label>
+              <input class="form-control" type="file" id="uploadImages" name="images" multiple>
+            </div>
+        
+            <label class="col-form-label mt-4" for="description">Descripción</label>
+            <textarea class="form-control" id="description" name="description" required></textarea>
+          </div>
+        
+          <div class="details">
+            <label class="col-form-label mt-4" for="shortTitle">Título corto</label>
+            <input class="form-control" type="text" id="shortTitle" name="shortTitle" required>
+        
+            <label class="col-form-label mt-4" for="shortDesc">Descripción corta</label>
+            <textarea class="form-control" id="shortDesc" name="shortDesc" required></textarea>
+        
+            <label class="col-form-label mt-4" for="deliveryTime">Tiempo de entrega</label>
+            <input class="form-control" type="number" id="deliveryTime" name="deliveryTime" required>
+        
+            <label class="col-form-label mt-4" for="revisionNumber">Número de revisiones</label>
+            <input class="form-control" type="number" id="revisionNumber" name="revisionNumber" required>
+        
+            <label class="col-form-label mt-4" for="featureInput">Agregar funcionalidades</label>
+            <textarea class="form-control" id="features" name="features" placeholder="JSON de funcionalidades"></textarea>
+        
+            <label class="col-form-label mt-4" for="price">Precio</label>
+            <input class="form-control" type="number" id="price" name="price" required>
+          </div>
+        
+          <button class="btn btn-success mt-4" type="submit">Crear servicio</button>
+        </form>
+    
+    </div>
+</div>
+
+<!-- <%- include('./../components/footer.ejs') %> -->
+
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+  const state = {
+    title: '',
+    category: '',
+    description: '',
+    shortTitle: '',
+    shortDesc: '',
+    deliveryTime: 0,
+    revisionNumber: 0,
+    features: [],
+    price: 0,
+    coverImage: null,
+    images: []
+  };
+
+  let uploading = false;
+
+  const updateState = (key, value) => {
+    state[key] = value;
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    updateState(name, value);
+  };
+
+  const handleFeature = (event) => {
+    event.preventDefault();
+    const featureInput = document.getElementById('featureInput');
+    if (featureInput.value) {
+      state.features.push(featureInput.value);
+      renderFeatures();
+      featureInput.value = '';
+    }
+  };
+
+  const renderFeatures = () => {
+    const addedFeatures = document.getElementById('addedFeatures');
+    addedFeatures.innerHTML = '';
+    state.features.forEach((feature, index) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        ${feature} <button data-index="${index}" class="remove-feature">X</button>
+      `;
+      addedFeatures.appendChild(div);
+    });
+    attachRemoveFeatureHandlers();
+  };
+
+  const attachRemoveFeatureHandlers = () => {
+    const removeButtons = document.querySelectorAll('.remove-feature');
+    removeButtons.forEach(button => {
+      button.addEventListener('click', (event) => {
+        const index = event.target.getAttribute('data-index');
+        state.features.splice(index, 1);
+        renderFeatures();
+      });
+    });
+  };
+
+  const handleUpload = async () => {
+    uploading = true;
+    const uploadButton = document.getElementById('uploadButton');
+    uploadButton.textContent = 'Uploading...';
+
+    const coverInput = document.getElementById('coverImage');
+    const imagesInput = document.getElementById('uploadImages');
+
+    try {
+      const cover = await mockUpload(coverInput.files[0]);
+      const images = await Promise.all(
+        Array.from(imagesInput.files).map(file => mockUpload(file))
+      );
+
+      state.coverImage = cover;
+      state.images = images;
+
+      console.log('Uploaded:', { cover, images });
+    } catch (error) {
+      console.error('Upload failed:', error);
+    } finally {
+      uploading = false;
+      uploadButton.textContent = 'Upload';
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log('Form submitted with state:', state);
+    // Mock navigation or API request
+  };
+
+  const mockUpload = (file) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (file) {
+          resolve(`Uploaded_${file.name}`);
+        } else {
+          reject('No file');
+        }
+      }, 1000);
+    });
+  };
+
+  document.querySelectorAll('input, textarea, select').forEach(input => {
+    input.addEventListener('change', handleChange);
+  });
+
+  document.getElementById('featureForm').addEventListener('submit', handleFeature);
+  document.getElementById('uploadButton').addEventListener('click', handleUpload);
+  document.getElementById('createButton').addEventListener('click', handleSubmit);
+});
+
+
+
+
+</script>

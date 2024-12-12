@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="../styles/bootstrap.min.css">
+<link rel="stylesheet" href="../styles/pages/services.css">
+<style>
+    * {
+      padding: 0;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+    }
+    .link {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+
+<%- include('./../components/navbarAdmin.ejs') %>
+
+<div class="services">
+    <h1>Servicios</h1>
+  <hr style="background-color: rgb(187, 187, 187); height: 3px; width: 90%; margin-bottom: 30px;">
+
+    <div class="container">
+    <div class="row">
+        <% services.forEach(service => { %>
+          <%- include('./../components/servicecard', { service }) %>
+        <% }) %>
+    </div>
+    </div>
+    
+</div>
+
+  

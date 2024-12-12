@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Completa tu Perfil</title>
+</head>
+<body>
+  <h1>Completa tu Perfil</h1>
+  <form action="/customers/complement-profile" method="POST">
+    <label for="img">URL de Imagen de Perfil:</label>
+    <input type="text" id="img" name="img" required>
+    
+    <label class="col-form-label mt-4" for="desc">Descripción</label>
+            <textarea class="form-control" id="desc" name="desc" required></textarea>
+
+    <label for="country">País:</label>
+    <input type="text" id="country" name="country" required>
+    
+    <label for="isSeller">¿Eres Vendedor?</label>
+    <select id="isSeller" name="isSeller">
+      <option value="1">Sí</option>
+      <option value="0">No</option>
+    </select>
+
+
+    <button type="submit">Complementar</button>
+    <a href="/">En otro momento</a>
+  </form>
+</body>
+</html>

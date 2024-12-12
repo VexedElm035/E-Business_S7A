@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles/bootstrap.min.css">
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+    }
+    .link {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <%- include('./../components/navbarDin.ejs') %>
+
+ <!-- Contenido dinámico -->
+  <%- include('./../views/home.ejs',{ cards: cards }) %> 
+
+  <!-- Footer -->
+  <%- include('./../components/footer.ejs') %>
+</body>
+</html>

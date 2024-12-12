@@ -1,0 +1,101 @@
+<link rel="stylesheet" href="../styles/components/navbar.css">
+<div id="navbar" class="navbar">
+  <div class="container">
+    <div class="logo">
+      <a class="link" href="/">
+        <span class="text">CodeConnect</span>
+      </a>
+      <span class="dot">.</span>
+    </div>
+    <div class="links">
+      <!-- Opciones estáticas -->
+      <a class="link" href="/">Explora</a>
+      <a class="link" href="/services/catalogue">Servicios</a>
+      <!-- Opciones dinámicas -->
+      <% if (!currentUser) { %>
+        <a class="link" href="/customers/signup">Regístrate</a>
+        <a class="link" href="/customers/login">Iniciar Sesión</a>
+      <% } else { %>
+        <div id="user-section" class="user">
+          <img src="/image/noavatar.jpg" alt="fotoperfil" class="ppic">
+          <span id="username"><%= currentUser.username %></span>
+          <div id="user-options" class="options" style="display: none;">
+            <% if (currentUser.isSeller) { %>
+              <div id="seller-options">
+                <a class="link" href="/services/myservices">Mis Servicios</a>
+                <hr>
+                
+                <a class="link" href="/services/add">Agregar Nuevo Servicio</a>
+              </div>
+            <% } else { %>
+              <a id="become-seller" class="link" href="/become-seller">Conviértete en Vendedor</a>
+            <% } %>
+            <a class="link" href="/orders">Ordenes</a>
+            <a class="link" href="/messages">Mensajes</a>
+            <a class="link" href="/customers/logout">Cerrar Sesión</a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Menú dinámico -->
+  <div id="menu" style="display: none;" class="menu">
+    <hr>
+    <div class="categoriesmenu">
+      <a class="link menuLink" href="/">Desarrollo de Software</a>
+      <a class="link menuLink" href="/">Programación Web</a>
+      <a class="link menuLink" href="/">Ciberseguridad</a>
+      <a class="link menuLink" href="/">Diseño Gráfico</a>
+      <a class="link menuLink" href="/">Video y Animación</a>
+      <a class="link menuLink" href="/">Análisis de Datos</a>
+      <a class="link menuLink" href="/">Servicios de IA</a>
+      <a class="link menuLink" href="/">Comercio Electrónico</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Elementos del DOM
+  const navbar = document.getElementById('navbar');
+  const becomeSeller = document.getElementById('become-seller');
+  const loginButton = document.getElementById('login-button');
+  const userSection = document.getElementById('user-section');
+  const usernameSpan = document.getElementById('username');
+  const userOptions = document.getElementById('user-options');
+  const sellerOptions = document.getElementById('seller-options');
+  const menu = document.getElementById('menu');
+  
+  let active = false;
+  let open = false;
+
+  // Función para manejar el estado de la barra de navegación
+  function handleNavbarState() {
+    if (window.scrollY > 0) {
+      if (!active) {
+        navbar.classList.add('active');
+        document.querySelector('.logo a').style.color = 'black';
+        menu.style.display = 'flex'; // Mostrar menú
+        active = true;
+      }
+    } else {
+      if (active) {
+        navbar.classList.remove('active');
+        document.querySelector('.logo a').style.color = '';
+        menu.style.display = 'none'; // Ocultar menú
+        active = false;
+      }
+    }
+  }
+
+  // Mostrar/ocultar opciones del usuario
+  if (userSection) {
+    userSection.addEventListener('click', () => {
+      open = !open;
+      userOptions.style.display = open ? 'flex' : 'none';
+    });
+  }
+
+  // Detectar el desplazamiento
+  window.addEventListener('scroll', handleNavbarState);
+</script>

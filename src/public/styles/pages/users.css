@@ -1,0 +1,70 @@
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(198, 198, 198, 0.15); /* Fondo semi-transparente negro */
+    backdrop-filter: blur(5px); /* Efecto borroso */
+    z-index: 1; /* Debajo de la capa del formulario de edición */
+    opacity: 0; /* Comienza transparente */
+    visibility: hidden; /* Oculto por defecto */
+    transition: opacity 0.5s ease, visibility 0.5s ease; 
+}
+
+.users{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    h1{
+        font-size: 50px;
+        margin-top: 20px;
+    }
+    .table{
+        max-width: 90%;
+        margin-right: 20px;
+        .table-primary{
+            td{
+                font-size: 20px;
+            }
+        }
+    }
+    .container{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .card-add{
+        padding: 10px;
+        height: 100%;
+        border: 1px;
+        border-color: black;
+    }
+    #button-add{
+        height: 20%;
+        font-size: 30px;
+        margin: 10px;
+    }
+}
+
+.users #editForm{
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Transición para aparecer */
+    position: absolute;
+    z-index: 2;
+    background: white;
+    width: 60%;
+    height: 90%;
+    opacity: 0; /* Comienza transparente */
+    visibility: hidden; /* Oculto por defecto */
+    transform: translateY(-30px);
+}
+.users #editForm.active{
+    opacity: 1; /* Visible */
+    visibility: visible; /* Se muestra */
+    transform: translateY(30px);
+}
+
+#overlay.active {
+    opacity: 1; /* Visible */
+    visibility: visible; /* Se muestra */
+}

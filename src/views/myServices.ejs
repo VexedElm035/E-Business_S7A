@@ -1,0 +1,77 @@
+<link rel="stylesheet" href="../styles/bootstrap.min.css">
+<link rel="stylesheet" href="../styles/pages/myservices.css">
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .link {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+<%- include('./../components/navbar.ejs') %>
+
+<div id="app" class="my-services">
+  <div class="container">
+    <center>
+      <h1>Mis Servicios</h1>
+      <hr style="background-color: rgb(187, 187, 187); height: 3px; width: 90%; margin-bottom: 30px;">
+    </center>
+
+    <!-- Servicios activos -->
+    <% if(activeServices) { %>
+    <h2>Servicios Activos</h2>
+    <div class="row">
+      <% activeServices.forEach(service => { %>
+        <%- include('./../components/servicecard', { service }) %>
+      <% }) %>
+    </div>
+    <% } else { %>
+      <h2>No Hay Servicios Activos</h2>
+      <% } %>
+    <hr style="background-color: rgb(187, 187, 187); height: 2px; width: 90%; margin: 30px auto;">
+
+    <!-- Servicios inactivos -->
+    <% if(inactiveServices) { %>
+    <h2>Servicios Inactivos</h2>
+    <div class="row">
+     
+      <% inactiveServices.forEach(service => { %>
+        <%- include('./../components/servicecard', { service }) %>
+      <% }) %>
+      
+    </div>
+    <% } %>
+  </div>
+
+  <div style="display: flex; justify-content: flex-end; padding: 20px;">
+    <a class="btn btn-success mt-4" href="/services/add">Agregar Nuevo Servicio</a>
+  </div>
+</div>
+
+<!-- Div flotante para detalle de servicio -->
+<div class="overlay" id="serviceOverlay"></div>
+<div class="service-detail" id="serviceDetail">
+  <div class="card bg-secondary mb-3">
+    <div class="card-header" style="display: flex; justify-content: space-between;">
+      
+      <h3 id="serviceTitle"></h3>
+      <button class="btn btn-outline-danger" onclick="closeServiceDetail()">X</button>
+    </div>
+    <div class="card-body">
+      <img id="serviceCover" style="width: 30%;" class="img-fluid" alt="Service Cover">
+      <p id="serviceDescription"></p>
+      <p><strong>Precio:</strong> $<span id="servicePrice"></span></p>
+      <p><strong>Tiempo de entrega:</strong> <span id="serviceDeliveryTime"></span> días</p>
+      <p><strong>Revisiones:</strong> <span id="serviceRevisionNumber"></span></p>
+      <p><strong>Funciones:</strong> <span id="serviceFeatures"></span></p>
+     <!-- aqui esta el boton de editar -->
+      <button style="width: 200px;" class="btn btn-info">Editar</button>
+    </div>
+  </div>
+</div>
+
+<%- include('./../components/footer.ejs') %>
+

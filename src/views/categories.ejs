@@ -1,0 +1,206 @@
+<link rel="stylesheet" href="../styles/bootstrap.min.css">
+<link rel="stylesheet" href="../styles/pages/categories.css">
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .link {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
+
+<%- include('./../components/navbarAdmin.ejs') %>
+
+<div style="display: flex; justify-content: space-around;" >
+<div id="alertContainer" style="position: fixed; top: 50px; width: 30%; z-index: 1050; display: none;">
+  <div id="alertMessage" class="alert alert-dismissible fade show" role="alert">
+    <span id="alertText"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+</div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<div class="categories">
+  <h1>Categorías</h1>
+  <hr style="background-color: rgb(187, 187, 187); height: 3px; width: 90%; margin-bottom: 30px;">
+
+  <div class="container">
+    <table class="table">
+      <thead>
+        <tr class="table-primary">
+          <td>NO.</td>
+          <td>Nombre</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (categories) { %>
+          <% for(var i=0; i < categories.length; i++) { %>
+            <tr>
+              <td><%= (i + 1) %></td>
+              <td><%= categories[i].name %></td>
+              <td>
+                <button class="btn btn-info" onclick="editCategory('<%= categories[i].name %>')">INSPECCIONAR</button>
+              </td>
+            </tr>
+          <% } %>
+        <% } %>
+      </tbody>
+    </table>
+    <div class="card bg-secondary mb-3" style="min-width: 20rem; z-index: 0;">
+      <div class="card-header"><h2>Agregar Categoria</h2></div>
+      <div class="card-body">
+        <form action="/admin/categories/add" method="post">
+          <label for="nombreADD" class="col-form-label mt-2">Nombre:</label>
+          <div class="col-sm-10">
+            <input type="text" id="nombreADD" name="nombreADD" class="form-control" required>
+          </div>
+          <label for="descripcionADD" class="form-label mt-4">Descripción:</label>
+          <textarea id="descripcionADD" name="descripcionADD" class="form-control" rows="3" required></textarea>
+      
+          <button class="btn btn-outline-primary mt-4"  type="submit">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario de edición oculto -->
+  <div id="editForm" class="card bg-secondary mb-3" style=" margin-top: 20px;">
+    <div class="card-header" style="display: flex; flex-direction: row; justify-content: space-between;">
+      <h3>CATEGORIA: <span id="catName" name="catName"></span></h3>
+      <button class="btn btn-outline-danger" onclick="closeEditForm()">X</button>
+    </div>
+    
+    <div class="card-body">
+      <form id="updateForm" method="POST" action="/admin/categories/update">
+        <input type="hidden" id="originalName" name="originalName">
+        <div class="form-group">
+          <label for="nombreUPD" class="col-form-label mt-2">Nombre:</label>
+          <div class="col-sm-20">
+            <input type="text" id="nombreUPD" name="nombreUPD" class="form-control" required readonly="">
+          </div>
+          <div class="form-group">
+            <label for="descripcionUPD" class="form-label mt-4">Descripción:</label>
+            <textarea id="descripcionUPD" name="descripcionUPD" class="form-control" rows="3" required readonly=""></textarea>
+          </div>
+      
+          <div class="form-check form-switch mt-4">
+            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+            <label class="form-check-label" for="flexSwitchCheckDefault">Habilitar Edicion</label>
+          </div>
+          <div style="display: flex; flex-direction: row; justify-content: space-between;">
+            <div style="display: flex; justify-content: flex-start;">
+              <button type="submit" class="btn btn-primary mt-4" id="guardarCambios" style="display:none;">Guardar Cambios</button>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <a id="delCat" class="btn btn-danger mt-4" style="width: 150px;">Eliminar</a>
+            </div>
+          </div>
+        </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let globalState = {
+    originalName: '',
+    originalDescription: ''
+  };
+  // Mostrar el formulario de edición con los datos de la categoría
+  function editCategory(name) {
+    fetch(`/admin/categories/update/${name}`)
+        .then(response => response.json())
+        .then(data => {
+            globalState.originalName = data.name;
+            globalState.originalDescription = data.description;
+            document.getElementById('catName').textContent = name;
+            document.getElementById('originalName').value = name;
+            document.getElementById('nombreUPD').value = data.name;
+            document.getElementById('descripcionUPD').value = data.description;
+            document.getElementById('updateForm').action = `/admin/categories/update/${name}`;
+            document.getElementById('delCat').setAttribute('href', `/admin/categories/delete/${name}`);
+            // Mostrar el formulario y el overlay
+            document.getElementById('editForm').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+            document.body.style.overflow = 'hidden'; // Deshabilitar scroll
+        });
+  }
+
+  function closeEditForm() {
+      // Ocultar el formulario y el overlay
+      document.getElementById('editForm').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+      document.body.style.overflow = ''; // Restaurar scroll
+  }
+
+  // Manejar el checkbox de "Habilitar Edición"
+  document.getElementById('flexSwitchCheckDefault').addEventListener('change', function(event) {
+    const isChecked = event.target.checked;
+    
+    // Habilitar o deshabilitar inputs y botón de guardar cambios
+    document.getElementById('nombreUPD').readOnly = !isChecked;
+    document.getElementById('descripcionUPD').readOnly = !isChecked;
+    document.getElementById('guardarCambios').style.display = isChecked ? 'block' : 'none';
+    
+    // Restaurar los valores iniciales si no está habilitada la edición
+    if (!isChecked) {
+      document.getElementById('nombreUPD').value = globalState.originalName;
+      document.getElementById('descripcionUPD').value = globalState.originalDescription;
+    }
+  });
+
+  // Manejar el clic fuera del formulario para cerrar el panel de edición
+  window.addEventListener('click', function(event) {
+    const isClickInside = document.getElementById('editForm').contains(event.target);
+    if (!isClickInside) {
+      closeEditForm();
+    }
+  });
+</script>
+
+<script>
+  function showAlert(status, message) {
+    const alertContainer = document.getElementById("alertContainer");
+    const alertMessage = document.getElementById("alertMessage");
+    const alertText = document.getElementById("alertText");
+
+    // Estilo según el estado
+    if (status === "success") {
+      alertMessage.classList.remove("alert-danger", "alert-warning");
+      alertMessage.classList.add("alert-success");
+    } else if (status === "error") {
+      alertMessage.classList.remove("alert-success", "alert-warning");
+      alertMessage.classList.add("alert-danger");
+    } else {
+      alertMessage.classList.remove("alert-success", "alert-danger");
+      alertMessage.classList.add("alert-warning");
+    }
+
+    // Mostrar el mensaje
+    alertText.textContent = message;
+    alertContainer.style.display = "block";
+
+    // Ocultar después de 5 segundos
+    setTimeout(() => {
+      alertContainer.style.display = "none";
+    }, 5000);
+  }
+
+  // Leer parámetros de URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const status = urlParams.get("status");
+  const message = urlParams.get("message");
+
+  if (status && message) {
+    showAlert(status, message);
+    // Eliminar los parámetros de la URL sin recargar
+    const newUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+</script>
+
